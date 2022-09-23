@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<NoWarn>CS8618</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="System" />
+		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Text" />
+		<Using Include="Microsoft.EntityFrameworkCore" />
+		<Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders"/>
+		<Using Include="AppApiService.Domain.Common"/>
+	</ItemGroup>
+
+</Project>
