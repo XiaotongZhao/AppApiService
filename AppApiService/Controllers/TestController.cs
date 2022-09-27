@@ -19,6 +19,7 @@ public class TestController : ControllerBase
     [HttpGet(Name = "GetTestListAsync")]
     public async Task<List<Test>> GetTestListAsync()
     {
+        logger.LogInformation("this is a test");
         var res = await testService.GetTestListAsync();
         return res;
     }
