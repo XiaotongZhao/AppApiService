@@ -39,4 +39,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/", () => "Deploy appApiService successfull!");
+
 app.Run();

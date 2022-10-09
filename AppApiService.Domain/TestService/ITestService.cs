@@ -5,5 +5,5 @@ public interface ITestService
     Task<List<Test>> GetTestListAsync();
     Task<bool> AddTest(Test test);
     Task<bool> DeleteTest(int id);
-    Task<bool> Update(Test test);
+    Task<bool> UpdateTest(Test test);
 }

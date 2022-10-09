@@ -36,7 +36,7 @@ public class TestService : ITestService
         return tests;
     }
 
-    public async Task<bool> Update(Test test)
+    public async Task<bool> UpdateTest(Test test)
     {
         unitOfWork.Get().Set<Test>().Update(test);
         var changeCount = await unitOfWork.Get().SaveChangesAsync();

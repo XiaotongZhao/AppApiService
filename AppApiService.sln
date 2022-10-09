@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppApiService.Infrastructur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppApiService.Infrastructure.MemoryCache", "AppApiService.Infrastructure.MemoryCache\AppApiService.Infrastructure.MemoryCache.csproj", "{7C5EEDF9-5AC1-4AF3-838E-7C8522468854}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppApiService.Infrastructure.Common", "AppApiService.Infrastructure.Common\AppApiService.Infrastructure.Common.csproj", "{2D26C6C5-3CAD-4840-9A44-A3F6B97CD635}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppApiService.Infrastructure.Common", "AppApiService.Infrastructure.Common\AppApiService.Infrastructure.Common.csproj", "{2D26C6C5-3CAD-4840-9A44-A3F6B97CD635}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C7056925-3D8E-40EB-8790-82F0435E3C16}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
