@@ -10,7 +10,7 @@ public class IoCConfig
         foreach (var project in projects)
         {
             var interfacesAndImplementClasses = Assembly.Load(project).GetTypes()
-           .Where(type => type.IsClass && type.GetInterfaces().Length > 0)
+           .Where(type => type.IsClass && type.GetInterfaces().Length > 0 && type.ContainsGenericParameters == false)
            .Select(type => new { ImplementInterfaceClass = type, Interfaces = type.GetInterfaces().ToList() }).ToList();
 
             foreach (var interfaceClass in interfacesAndImplementClasses)

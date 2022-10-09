@@ -1,45 +1,35 @@
 ﻿namespace AppApiService.Domain.TestService;
 
-public class TestService : ITestService
+public class TestService : CommonService<Test, int>, ITestService
 {
     private IUnitOfWork unitOfWork;
 
-    public TestService(IUnitOfWork unitOfWork)
+    public TestService(IUnitOfWork unitOfWork) : base(unitOfWork)
     {
         this.unitOfWork = unitOfWork;
     }
 
     public async Task<bool> AddTest(Test test)
     {
-        await unitOfWork.Get().Set<Test>().AddAsync(test);
-        var changeCount = await unitOfWork.Get().SaveChangesAsync();
-        return changeCount > 0;
+        var res = await Add(test);
+        return res;
     }
 
     public async Task<bool> DeleteTest(int id)
     {
-        var test = await unitOfWork.Get().Set<Test>().FindAsync(id);
-        if (test != null)
-        {
-            test.IsDeleted = true;
-            unitOfWork.Get().Set<Test>().Update(test);
-            var changeCount = await unitOfWork.Get().SaveChangesAsync();
-            return changeCount >= 0;
-        }
-        else
-            return false;
+        var res = await Delete(id);
+        return res;
     }
 
     public async Task<List<Test>> GetTestListAsync()
     {
-        var tests = await unitOfWork.Get().Set<Test>().ToListAsync();
+        var tests = await GetDataListAsync();
         return tests;
     }
 
     public async Task<bool> UpdateTest(Test test)
     {
-        unitOfWork.Get().Set<Test>().Update(test);
-        var changeCount = await unitOfWork.Get().SaveChangesAsync();
-        return changeCount >= 0;
+        var res = await Update(test);
+        return res;
     }
 }
