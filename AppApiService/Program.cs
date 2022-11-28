@@ -4,7 +4,17 @@ using AppApiService.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var allowAnyOrigins = "allowAnyOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: allowAnyOrigins,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                      });
+});
 // Add services to the container.
 builder.Services.AddDbContext<EFContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDBConnection")));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -34,6 +44,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(allowAnyOrigins);
 
 app.UseAuthorization();
 

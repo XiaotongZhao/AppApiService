@@ -21,10 +21,12 @@ public class TestService : CommonService<Test, int>, ITestService
         return res;
     }
 
-    public async Task<List<Test>> GetTestListAsync()
+    public IQueryable<Test> GetTestList(string keyword)
     {
-        var tests = await GetDataListAsync();
-        return tests;
+        var datas = unitOfWork.Get().Set<Test>().AsQueryable();
+        if(!string.IsNullOrEmpty(keyword))
+            datas = datas.Where(a => a.Name.Contains(keyword));
+        return datas;
     }
 
     public async Task<bool> UpdateTest(Test test)

@@ -1,4 +1,6 @@
 using AppApiService.Domain.TestService;
+using AppApiService.Infrastructure.Common;
+using AppApiService.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppApiService.Controllers;
@@ -37,10 +39,10 @@ public class TestController : ControllerBase
         return res;
     }
 
-    [HttpGet, Route("GetTestListAsync")]
-    public async Task<List<Test>> GetTestListAsync()
+    [HttpPost, Route("GetTestList")]
+    public async Task<DataSource<Test>> GetTestList(SeachModel seachModel)
     {
-        var res = await testService.GetTestListAsync();
+        var res = await testService.GetTestList(seachModel.Keyword).TakePageDataAndCountAsync(seachModel.Skip, seachModel.Size);
         return res;
     }
 }

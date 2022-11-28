@@ -2,7 +2,7 @@
 
 public interface ITestService
 {
-    Task<List<Test>> GetTestListAsync();
+    IQueryable<Test> GetTestList(string keyword);
     Task<bool> AddTest(Test test);
     Task<bool> DeleteTest(int id);
     Task<bool> UpdateTest(Test test);
