@@ -45,4 +45,10 @@ public class TestController : ControllerBase
         var res = await testService.GetTestList(seachModel.Keyword).TakePageDataAndCountAsync(seachModel.Skip, seachModel.Size);
         return res;
     }
+
+    [HttpGet, Route("FindTest")]
+    public async Task<Test> FindTest(int id)
+    {
+        return await testService.FindTest(id);
+    }
 }

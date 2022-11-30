@@ -6,4 +6,5 @@ public interface ITestService
     Task<bool> AddTest(Test test);
     Task<bool> DeleteTest(int id);
     Task<bool> UpdateTest(Test test);
+    Task<Test> FindTest(int id);
 }
