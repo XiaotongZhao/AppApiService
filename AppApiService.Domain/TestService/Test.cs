@@ -10,6 +10,8 @@ public class Test : EntityBase<int>
     public int Age { get; set; }
     [Column(TypeName = "nvarchar(500)")]
     public string Address { get; set; }
+    [Column(TypeName = "nvarchar(500)")]
+    public string Country { get; set; }
 }
 
 public class TestConfiguration : IEntityTypeConfiguration<Test>
