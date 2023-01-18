@@ -9,6 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -16,8 +17,8 @@
 		<Using Include="System.Collections.Generic" />
 		<Using Include="System.Text" />
 		<Using Include="Microsoft.EntityFrameworkCore" />
-		<Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders"/>
-		<Using Include="AppApiService.Domain.Common"/>
+		<Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders" />
+		<Using Include="AppApiService.Domain.Common" />
 	</ItemGroup>
 
 </Project>
