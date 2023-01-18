@@ -1,7 +1,6 @@
-﻿using AppApiService.Domain.DynamicRequestDataService;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
-namespace AppApiService.Domain.TestService;
+namespace AppApiService.Domain.DynamicRequestDataService;
 
 public class DynamicDataService : IDynamicDataService
 {
@@ -35,7 +34,7 @@ public class DynamicDataService : IDynamicDataService
     {
         var propertyName = perproty.Key;
         var propertyValue = perproty.Value;
-        if(dicNameAndDataMap.Keys.Any(key => key == propertyName) && propertyValue != null) 
+        if (dicNameAndDataMap.Keys.Any(key => key == propertyName) && propertyValue != null)
         {
             var dataMap = dicNameAndDataMap[propertyName];
             var mapName = dataMap.MapName;
@@ -65,7 +64,7 @@ public class DynamicDataService : IDynamicDataService
                 }
                 finalData.Add(mapName, childObject);
             }
-            else if (dataMap.MapType == DataType.ArrayObject) 
+            else if (dataMap.MapType == DataType.ArrayObject)
             {
                 var childDataMaps = dataMap.ChildDataMaps;
                 var arrays = new JArray();
