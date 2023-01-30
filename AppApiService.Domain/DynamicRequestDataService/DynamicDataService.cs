@@ -30,63 +30,81 @@ public class DynamicDataService : IDynamicDataService
         return await unitOfWork.Get().Set<DataMap>().ToListAsync();
     }
 
-    public void MapJsonPropertyValue(JObject finalData, KeyValuePair<string, JToken?> perproty, Dictionary<string, DataMap> dicNameAndDataMap)
+    public void MapJsonPropertyValue(JObject finalData, KeyValuePair<string, JToken?> perproty, Dictionary<string, List<DataMap>> dicNameAndDataMap)
     {
         var propertyName = perproty.Key;
         var propertyValue = perproty.Value;
         if (dicNameAndDataMap.Keys.Any(key => key == propertyName) && propertyValue != null)
         {
-            var dataMap = dicNameAndDataMap[propertyName];
-            var mapName = dataMap.MapName;
-            if (dataMap.MapType == DataType.String)
+            var dataMaps = dicNameAndDataMap[propertyName];
+            foreach (var dataMap in dataMaps)
             {
-                finalData.Add(mapName, propertyValue.ToString());
-            }
-            else if (dataMap.MapType == DataType.Int)
-            {
-                finalData.Add(mapName, (int)propertyValue);
-            }
-            else if (dataMap.MapType == DataType.Object)
-            {
-                var childDataMaps = dataMap.ChildDataMaps;
-                var childObject = new JObject();
-                if (childDataMaps != null)
+                var mapName = dataMap.MapName;
+                var parentMapName = dataMap.ParentMapName;
+                if (dataMap.MapType == DataType.String)
                 {
-                    var dicNameAndChildDataMap = childDataMaps.ToDictionary(key => key.Name, value => value);
-                    var childDataObject = propertyValue.ToObject<JObject>();
-                    if (childDataObject != null)
-                    {
-                        foreach (var property in childDataObject)
-                        {
-                            MapJsonPropertyValue(childObject, property, dicNameAndChildDataMap);
-                        }
-                    }
+                    finalData.Add(mapName, propertyValue.ToString());
                 }
-                finalData.Add(mapName, childObject);
-            }
-            else if (dataMap.MapType == DataType.ArrayObject)
-            {
-                var childDataMaps = dataMap.ChildDataMaps;
-                var arrays = new JArray();
-                if (childDataMaps != null)
+                else if (dataMap.MapType == DataType.Int)
                 {
-                    var dicNameAndChildDataMap = childDataMaps.ToDictionary(key => key.Name, value => value);
-                    foreach (var e in propertyValue)
+                    finalData.Add(mapName, (int)propertyValue);
+                }
+                else if (dataMap.MapType == DataType.Object)
+                {
+                    var childDataMaps = dataMap.ChildDataMaps;
+                    var childObject = new JObject();
+                    if (childDataMaps != null)
                     {
-                        var elementObject = e.ToObject<JObject>();
-                        if (elementObject != null)
+                        var keyAndDataMaps = childDataMaps.GroupBy(key => key.Name)
+                            .Select(a => new { a.Key, dataMaps = a.Select(b => b).ToList() }).ToList();
+                        var dicNameAndChildDataMaps = keyAndDataMaps.ToDictionary(key => key.Key, value => value.dataMaps);
+                        var childDataObject = propertyValue.ToObject<JObject>();
+                        if (childDataObject != null)
                         {
-                            var data = new JObject();
-                            foreach (var property in elementObject)
+                            foreach (var property in childDataObject)
                             {
-                                MapJsonPropertyValue(data, property, dicNameAndChildDataMap);
+                                MapJsonPropertyValue(childObject, property, dicNameAndChildDataMaps);
                             }
-                            arrays.Add(data);
                         }
                     }
+                    finalData.Add(mapName, childObject);
                 }
-                finalData.Add(mapName, arrays);
+                else if (dataMap.MapType == DataType.ArrayObject)
+                {
+                    var childDataMaps = dataMap.ChildDataMaps;
+                    var arrays = new JArray();
+                    if (childDataMaps != null)
+                    {
+                        var keyAndDataMaps = childDataMaps.GroupBy(key => key.Name)
+                       .Select(a => new { a.Key, dataMaps = a.Select(b => b).ToList() }).ToList();
+                        var dicNameAndChildDataMaps = keyAndDataMaps.ToDictionary(key => key.Key, value => value.dataMaps);
+                        foreach (var e in propertyValue)
+                        {
+                            var elementObject = e.ToObject<JObject>();
+                            if (elementObject != null)
+                            {
+                                var data = new JObject();
+                                foreach (var property in elementObject)
+                                {
+                                    MapJsonPropertyValue(data, property, dicNameAndChildDataMaps);
+                                }
+                                arrays.Add(data);
+                            }
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(parentMapName))
+                    {
+                        var childObject = new JObject
+                    {
+                        { mapName, arrays }
+                    };
+                        finalData.Add(parentMapName, childObject);
+                    }
+                    else
+                        finalData.Add(mapName, arrays);
+                }
             }
+            
         }
     }
 
@@ -96,10 +114,13 @@ public class DynamicDataService : IDynamicDataService
         var res = new JObject();
 
         var dataMaps = await unitOfWork.Get().Set<DataMap>().ToListAsync();
-        var dicPropertyNameAndDataMap = await unitOfWork.Get().Set<DataMap>().ToDictionaryAsync(key => key.Name, value => value);
+        var keyAndDataMaps = await unitOfWork.Get().Set<DataMap>()
+            .GroupBy(key => key.Name)
+            .Select(a => new { a.Key, dataMaps = a.Select(b => b) }).ToListAsync();
+        var dicPropertyNameAndDataMaps = keyAndDataMaps.ToDictionary(key => key.Key, value => value.dataMaps.ToList());
         foreach (var e in data)
         {
-            MapJsonPropertyValue(res, e, dicPropertyNameAndDataMap);
+            MapJsonPropertyValue(res, e, dicPropertyNameAndDataMaps);
         }
         return res;
     }

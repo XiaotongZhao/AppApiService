@@ -4,6 +4,7 @@ public class DataMap : EntityBase<int>
 {
     public string Name { get; set; }
     public string MapName { get; set; }
+    public string? ParentMapName { get; set; }
     public DataType MapType { get; set; }
     public int? DataMapId { get; set; }
     public virtual List<DataMap>? ChildDataMaps {get; set; }

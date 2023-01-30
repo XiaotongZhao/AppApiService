@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AppApiService.Domain.DynamicRequestDataService;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Xml;
 
 namespace AppApiService.Controllers
 {
@@ -18,8 +20,10 @@ namespace AppApiService.Controllers
         public async Task<string> TestPostDynamicJsonMapJson(dynamic data)
         {
             JObject json = JObject.Parse(data.ToString());
-            var res = await dynamicDataService.TestMapJsonObject(json);
-            return res.ToString();
+            var jsonObject = await dynamicDataService.TestMapJsonObject(json);
+            var jsonToString = jsonObject.ToString();
+            XmlDocument doc = JsonConvert.DeserializeXmlNode(jsonToString, "PushTravelApplyOrder_1_1");
+            return doc.InnerXml.ToString();
         }
 
         [HttpPost, Route("AddDataMap")]
