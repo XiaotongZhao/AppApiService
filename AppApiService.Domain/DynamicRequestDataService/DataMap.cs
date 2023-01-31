@@ -4,11 +4,21 @@ public class DataMap : EntityBase<int>
 {
     public string Name { get; set; }
     public string MapName { get; set; }
+    public DataType? Type { get; set; }
     public string? ParentMapName { get; set; }
     public DataType MapType { get; set; }
     public int? DataMapId { get; set; }
     public virtual List<DataMap>? ChildDataMaps {get; set; }
+    public virtual List<DataValueMap>? DataValueMap { get; set; }
 }
+
+public class DataValueMap : EntityBase<int>
+{
+    public int DataMapId { get; set; }
+    public string DataValue { get; set; }
+    public string DataMapValue { get; set; }
+}
+
 
 public enum DataType
 {
@@ -16,7 +26,8 @@ public enum DataType
     String,
     Decimal,
     ArrayObject,
-    Object
+    Object,
+    Array
 }
 
 public class NameAndPropertyType

@@ -41,7 +41,13 @@ public class DynamicDataService : IDynamicDataService
             {
                 var mapName = dataMap.MapName;
                 var parentMapName = dataMap.ParentMapName;
-                if (dataMap.MapType == DataType.String)
+                if (dataMap.MapType == DataType.String && dataMap.Type == DataType.Array)
+                {
+                    var arrayData = propertyValue.ToArray();
+                    var firstValue = arrayData.FirstOrDefault() ?? string.Empty;
+                    finalData.Add(mapName, firstValue.ToString());
+                }
+                else if (dataMap.MapType == DataType.String)
                 {
                     finalData.Add(mapName, propertyValue.ToString());
                 }
@@ -95,16 +101,16 @@ public class DynamicDataService : IDynamicDataService
                     if (!string.IsNullOrEmpty(parentMapName))
                     {
                         var childObject = new JObject
-                    {
-                        { mapName, arrays }
-                    };
+                        {
+                            { mapName, arrays }
+                        };
                         finalData.Add(parentMapName, childObject);
                     }
                     else
                         finalData.Add(mapName, arrays);
                 }
             }
-            
+
         }
     }
 
