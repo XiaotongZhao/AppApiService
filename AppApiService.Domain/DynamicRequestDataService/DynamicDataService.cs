@@ -49,7 +49,13 @@ public class DynamicDataService : IDynamicDataService
                 }
                 else if (dataMap.MapType == DataType.String)
                 {
-                    finalData.Add(mapName, propertyValue.ToString());
+                    if (dataMap.DataValueMaps != null && dataMap.DataValueMaps.Any())
+                    {
+                        var mapValue = dataMap.DataValueMaps.Find(a => a.DataValue == propertyValue.ToString())?.DataMapValue;
+                        finalData.Add(mapName, mapValue);
+                    }
+                    else
+                        finalData.Add(mapName, propertyValue.ToString());
                 }
                 else if (dataMap.MapType == DataType.Int)
                 {
