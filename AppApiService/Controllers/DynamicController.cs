@@ -22,7 +22,7 @@ namespace AppApiService.Controllers
             JObject json = JObject.Parse(data.ToString());
             var jsonObject = await dynamicDataService.TestMapJsonObject(json);
             var jsonToString = jsonObject.ToString();
-            XmlDocument doc = JsonConvert.DeserializeXmlNode(jsonToString, "PushTravelApplyOrder_1_1");
+            XmlDocument doc = JsonConvert.DeserializeXmlNode(jsonToString, "PushTravelApplyOrder_1_1") ?? new XmlDocument();
             return doc.InnerXml.ToString();
         }
 
