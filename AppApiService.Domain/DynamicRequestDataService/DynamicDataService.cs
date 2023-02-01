@@ -49,9 +49,9 @@ public class DynamicDataService : IDynamicDataService
                 }
                 else if (dataMap.MapType == DataType.String)
                 {
-                    if (dataMap.DataValueMaps != null && dataMap.DataValueMaps.Any())
+                    if (dataMap.ChildDataValueMaps != null && dataMap.ChildDataValueMaps.Any())
                     {
-                        var mapValue = dataMap.DataValueMaps.Find(a => a.DataValue == propertyValue.ToString())?.DataMapValue;
+                        var mapValue = dataMap.ChildDataValueMaps.Find(a => a.DataValue == propertyValue.ToString())?.DataMapValue;
                         finalData.Add(mapName, mapValue);
                     }
                     else

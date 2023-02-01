@@ -9,7 +9,7 @@ public class DataMap : EntityBase<int>
     public DataType MapType { get; set; }
     public int? DataMapId { get; set; }
     public virtual List<DataMap>? ChildDataMaps {get; set; }
-    public virtual List<DataValueMap>? DataValueMaps { get; set; }
+    public virtual List<DataValueMap>? ChildDataValueMaps { get; set; }
 }
 
 public class DataValueMap : EntityBase<int>
