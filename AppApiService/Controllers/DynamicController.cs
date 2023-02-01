@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Xml;
+using Microsoft.AspNetCore.Mvc;
 using AppApiService.Domain.DynamicRequestDataService;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System.Xml;
 
 namespace AppApiService.Controllers
 {
@@ -25,14 +25,7 @@ namespace AppApiService.Controllers
             XmlDocument doc = JsonConvert.DeserializeXmlNode(jsonToString, "PushTravelApplyOrder_1_1") ?? new XmlDocument();
             return doc.InnerXml.ToString();
         }
-
-        [HttpPost, Route("AddDataMap")]
-        public async Task<bool> AddDataMap(DataMap dataMap)
-        {
-            var res = await dynamicDataService.AddDataMap(dataMap);
-            return res;
-        }
-
+        
         [HttpPost, Route("AddDataMaps")]
         public async Task<bool> AddDataMaps(List<DataMap> dataMaps)
         {
