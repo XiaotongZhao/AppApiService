@@ -1,3 +1,4 @@
+using AppApiService.Common;
 using AppApiService.Domain.Common;
 using AppApiService.Infrastructure.Common;
 using AppApiService.Infrastructure.Repository;
@@ -19,7 +20,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<EFContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDBConnection")));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 IoCConfig.ImplementDIByScanLibrary(builder.Services, new[] { "AppApiService.Domain" });
-builder.Services.AddControllers();
+builder.Services.AddControllers(controller => 
+{
+    controller.Filters.Add<LogFunActionFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
