@@ -51,4 +51,14 @@ public class TestController : ControllerBase
     {
         return await testService.FindTest(id);
     }
+
+
+    [HttpGet, Route("TestLog")]
+    public void TestLog()
+    {
+        for (var i = 0; i < 1000; i++) 
+        {
+            logger.LogInformation($"Test loop 1000 and curent index is {i}", DateTime.UtcNow);
+        }
+    }
 }
