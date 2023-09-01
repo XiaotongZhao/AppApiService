@@ -66,22 +66,35 @@ void ConfigureLogging()
             optional: true)
         .Build();
 
-    Log.Logger = new LoggerConfiguration()
-        .Enrich.FromLogContext()
-        .Enrich.WithExceptionDetails()
-        .WriteTo.Debug()
-        .WriteTo.Console()
-        .WriteTo.Elasticsearch(ConfigureElasticSink(configuration, environment))
-        .Enrich.WithProperty("Environment", environment)
-        .ReadFrom.Configuration(configuration)
-        .CreateLogger();
+    var elasticAddress = configuration["ElasticConfiguration:Uri"];
+    var userName = configuration["ElasticConfiguration:UserName"] ?? string.Empty;
+    var password = configuration["ElasticConfiguration:PassWord"] ?? string.Empty;
+    if (!string.IsNullOrEmpty(elasticAddress) && !string.IsNullOrEmpty(environment))
+    {
+        Log.Logger = new LoggerConfiguration()
+            .Enrich.FromLogContext()
+            .Enrich.WithExceptionDetails()
+            .WriteTo.Debug()
+            .WriteTo.Console()
+            .WriteTo.Elasticsearch(ConfigureElasticSink(elasticAddress, userName, password, environment))
+            .Enrich.WithProperty("Environment", environment)
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+    }
 }
 
-ElasticsearchSinkOptions ConfigureElasticSink(IConfigurationRoot configuration, string environment)
+ElasticsearchSinkOptions ConfigureElasticSink(string elasticAddress, string userName, string password, string environment)
 {
-    return new ElasticsearchSinkOptions(new Uri(configuration["ElasticConfiguration:Uri"]))
+    var index = $"{Assembly.GetExecutingAssembly()?.GetName()?.Name?.ToLower()}-{environment?.ToLower()}-{DateTime.UtcNow:yyyy-MM}";
+    return new ElasticsearchSinkOptions(new Uri(elasticAddress))
     {
         AutoRegisterTemplate = true,
-        IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower().Replace(".", "-")}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
+        IndexFormat = index,
+        ModifyConnectionSettings = connection =>
+        {
+            if(!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
+                connection.BasicAuthentication(userName, password);
+            return connection;
+        }
     };
 }

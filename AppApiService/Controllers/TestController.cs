@@ -61,4 +61,23 @@ public class TestController : ControllerBase
             logger.LogInformation($"Test loop 1000 and curent index is {i}", DateTime.UtcNow);
         }
     }
+
+    [HttpGet, Route("TestErrorLog")]
+    public void TestErrorLog()
+    {
+        for (var i = 0; i < 100; i++)
+        {
+            logger.LogError("Test input error log!!!!");
+        }
+    }
+
+    [HttpGet, Route("TestWarningLog")]
+    public void TestWarningLog()
+    {
+        for (var i = 0; i < 100; i++)
+        {
+            logger.LogWarning("Test input warning log!!!!");
+        }
+    }
+
 }
