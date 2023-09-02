@@ -1,11 +1,10 @@
-using AppApiService.Domain.Common;
-using AppApiService.Infrastructure.Common;
-using AppApiService.Infrastructure.Repository;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Serilog.Sinks.Elasticsearch;
 using Serilog;
-using System.Reflection;
-using Serilog.Exceptions;
+using AppApiService.Domain.Common;
+using AppApiService.Infrastructure.Common;
+using AppApiService.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigureLogging();
@@ -73,8 +72,6 @@ void ConfigureLogging()
     {
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
-            .Enrich.WithExceptionDetails()
-            .WriteTo.Debug()
             .WriteTo.Console()
             .WriteTo.Elasticsearch(ConfigureElasticSink(elasticAddress, userName, password, environment))
             .Enrich.WithProperty("Environment", environment)
