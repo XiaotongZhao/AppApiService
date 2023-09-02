@@ -71,7 +71,6 @@ void ConfigureLogging()
     if (!string.IsNullOrEmpty(elasticAddress) && !string.IsNullOrEmpty(environment))
     {
         Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
             .WriteTo.Console()
             .WriteTo.Elasticsearch(ConfigureElasticSink(elasticAddress, userName, password, environment))
             .Enrich.WithProperty("Environment", environment)
