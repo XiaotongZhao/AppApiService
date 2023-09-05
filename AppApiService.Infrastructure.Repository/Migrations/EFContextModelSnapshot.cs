@@ -17,7 +17,7 @@ namespace AppApiService.Infrastructure.Repository.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -149,7 +149,7 @@ namespace AppApiService.Infrastructure.Repository.Migrations
             modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataValueMap", b =>
                 {
                     b.HasOne("AppApiService.Domain.DynamicRequestDataService.DataMap", null)
-                        .WithMany("DataValueMap")
+                        .WithMany("ChildDataValueMaps")
                         .HasForeignKey("DataMapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -159,7 +159,7 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                 {
                     b.Navigation("ChildDataMaps");
 
-                    b.Navigation("DataValueMap");
+                    b.Navigation("ChildDataValueMaps");
                 });
 #pragma warning restore 612, 618
         }

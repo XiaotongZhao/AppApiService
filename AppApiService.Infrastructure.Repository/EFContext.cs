@@ -1,7 +1,7 @@
-﻿using AppApiService.Domain.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using AppApiService.Domain.Common;
 using AppApiService.Domain.DynamicRequestDataService;
 using AppApiService.Domain.TestService;
-using Microsoft.EntityFrameworkCore;
 
 namespace AppApiService.Infrastructure.Repository;
 

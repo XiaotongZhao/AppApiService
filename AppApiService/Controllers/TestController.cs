@@ -1,7 +1,6 @@
 using AppApiService.Domain.TestService;
 using AppApiService.Infrastructure.Common;
 using AppApiService.ViewModel;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AppApiService.Controllers;
 

@@ -1,12 +1,11 @@
-using AppApiService.Common;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Serilog.Sinks.Elasticsearch;
-using Serilog;
+using AppApiService.Common;
 using AppApiService.Domain.Common;
 using AppApiService.Infrastructure.Common;
 using AppApiService.Infrastructure.Repository;
-using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigureLogging();
@@ -26,7 +25,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<EFContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDBConnection")));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 IoCConfig.ImplementDIByScanLibrary(builder.Services, new[] { "AppApiService.Domain" });
-builder.Services.AddControllers(controller => 
+builder.Services.AddControllers(controller =>
 {
     controller.Filters.Add<LogFunActionFilter>();
 });
@@ -75,7 +74,6 @@ void ConfigureLogging()
     var userName = configuration["ElasticConfiguration:UserName"] ?? string.Empty;
     var password = configuration["ElasticConfiguration:PassWord"] ?? string.Empty;
     if (!string.IsNullOrEmpty(elasticAddress) && !string.IsNullOrEmpty(environment))
-    {
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Console()
@@ -83,7 +81,13 @@ void ConfigureLogging()
             .Enrich.WithProperty("Environment", environment)
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
-    }
+    else
+        Log.Logger = new LoggerConfiguration()
+          .Enrich.FromLogContext()
+          .WriteTo.Console()
+          .Enrich.WithProperty("Environment", environment)
+          .ReadFrom.Configuration(configuration)
+          .CreateLogger();
 }
 
 ElasticsearchSinkOptions ConfigureElasticSink(string elasticAddress, string userName, string password, string environment)
@@ -95,7 +99,7 @@ ElasticsearchSinkOptions ConfigureElasticSink(string elasticAddress, string user
         IndexFormat = index,
         ModifyConnectionSettings = connection =>
         {
-            if(!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
+            if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(password))
                 connection.BasicAuthentication(userName, password);
             return connection;
         }

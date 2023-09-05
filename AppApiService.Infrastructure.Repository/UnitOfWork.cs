@@ -1,5 +1,5 @@
-﻿using AppApiService.Domain.Common;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using AppApiService.Domain.Common;
 
 namespace AppApiService.Infrastructure.Repository;
 

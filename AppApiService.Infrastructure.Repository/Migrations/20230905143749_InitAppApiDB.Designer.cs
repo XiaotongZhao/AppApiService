@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppApiService.Infrastructure.Repository.Migrations
 {
     [DbContext(typeof(EFContext))]
-    [Migration("20230118025058_CreateTableDataMap")]
-    partial class CreateTableDataMap
+    [Migration("20230905143749_InitAppApiDB")]
+    partial class InitAppApiDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -39,7 +39,7 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DataMapChildId")
+                    b.Property<int?>("DataMapId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
@@ -59,11 +59,52 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ParentMapName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Type")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("DataMapChildId");
+                    b.HasIndex("DataMapId");
 
                     b.ToTable("DataMap");
+                });
+
+            modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataValueMap", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DataMapId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DataMapValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DataValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModifyOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataMapId");
+
+                    b.ToTable("DataValueMap");
                 });
 
             modelBuilder.Entity("AppApiService.Domain.TestService.Test", b =>
@@ -103,11 +144,25 @@ namespace AppApiService.Infrastructure.Repository.Migrations
 
             modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataMap", b =>
                 {
-                    b.HasOne("AppApiService.Domain.DynamicRequestDataService.DataMap", "DataMapChild")
-                        .WithMany()
-                        .HasForeignKey("DataMapChildId");
+                    b.HasOne("AppApiService.Domain.DynamicRequestDataService.DataMap", null)
+                        .WithMany("ChildDataMaps")
+                        .HasForeignKey("DataMapId");
+                });
 
-                    b.Navigation("DataMapChild");
+            modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataValueMap", b =>
+                {
+                    b.HasOne("AppApiService.Domain.DynamicRequestDataService.DataMap", null)
+                        .WithMany("ChildDataValueMaps")
+                        .HasForeignKey("DataMapId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataMap", b =>
+                {
+                    b.Navigation("ChildDataMaps");
+
+                    b.Navigation("ChildDataValueMaps");
                 });
 #pragma warning restore 612, 618
         }
