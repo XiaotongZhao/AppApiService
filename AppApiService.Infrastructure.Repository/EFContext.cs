@@ -1,4 +1,5 @@
 ﻿using AppApiService.Domain.Common;
+using AppApiService.Domain.DynamicRequestDataService;
 using AppApiService.Domain.TestService;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,7 @@ public class EFContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseLazyLoadingProxies();
 
     public virtual DbSet<Test> Tests { get; set; }
+    public virtual DbSet<DataMap> DataMap { get; set; }
 
     public override int SaveChanges()
     {

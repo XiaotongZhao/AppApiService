@@ -9,9 +9,9 @@ public class Test : EntityBase<int>
     public string Name { get; set; }
     public int Age { get; set; }
     [Column(TypeName = "nvarchar(500)")]
-    public string Address { get; set; }
+    public string? Address { get; set; }
     [Column(TypeName = "nvarchar(500)")]
-    public string Country { get; set; }
+    public string? Country { get; set; }
 }
 
 public class TestConfiguration : IEntityTypeConfiguration<Test>
