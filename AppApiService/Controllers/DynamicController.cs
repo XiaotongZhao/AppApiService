@@ -25,7 +25,7 @@ namespace AppApiService.Controllers
             XmlDocument doc = JsonConvert.DeserializeXmlNode(jsonToString, "PushTravelApplyOrder_1_1") ?? new XmlDocument();
             return doc.InnerXml.ToString();
         }
-        
+
         [HttpPost, Route("AddDataMaps")]
         public async Task<bool> AddDataMaps(List<DataMap> dataMaps)
         {
@@ -41,32 +41,17 @@ namespace AppApiService.Controllers
         }
 
         [HttpPost, Route("TestDynamicData")]
-        public void TestDynamicData(dynamic data)
+        public string TestDynamicData(dynamic data)
         {
             var jsonObject = JObject.Parse(data.ToString());
-            foreach (var property in jsonObject.Properties())
-            {
-                var propertyName = property.Name;
-                JToken propertyValue = property.Value;
-                var propertyType = propertyValue.Type;
-                if (propertyType == JTokenType.String)
-                {
-                    Console.WriteLine($"{propertyName} is a string");
-                }
-                else if (propertyType == JTokenType.Integer)
-                {
-                    Console.WriteLine($"{propertyName} is an integer");
-                }
-                else if (propertyType == JTokenType.Boolean)
-                {
-                    Console.WriteLine($"{propertyName} is a boolean");
-                }
-                else if (propertyType == JTokenType.Object)
-                {
-                    Console.WriteLine($"{propertyName} is a Object");
-                }
-                Console.WriteLine($"{property.Name}: {property.Value}");
-            }
+            var finalData = new JObject();
+            var dataMap = new Dictionary<string, string>();
+            dataMap.Add("Name", "MapName");
+            dataMap.Add("Age", "MapAge");
+            dataMap.Add("Detail", "MapDetail");
+            dataMap.Add("Description", "MapDescription");
+            dynamicDataService.MapDynamicData(jsonObject, dataMap, finalData);
+            return finalData.ToString();
         }
 
     }

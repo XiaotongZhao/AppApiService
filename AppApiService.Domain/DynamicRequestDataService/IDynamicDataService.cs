@@ -8,4 +8,6 @@ public interface IDynamicDataService
     Task<bool> AddDataMap(DataMap test);
     Task<bool> AddDataMaps(List<DataMap> dataMaps);
     Task<JObject> TestMapJsonObject(JObject data);
+    void MapDynamicData(JObject data, Dictionary<string, string> dataMap, JObject finalData);
+
 }

@@ -30,6 +30,52 @@ public class DynamicDataService : IDynamicDataService
         return await unitOfWork.Get().Set<DataMap>().ToListAsync();
     }
 
+    public void MapDynamicData(JObject data, Dictionary<string, string> dataMap, JObject finalData)
+    {
+        foreach (var property in data.Properties())
+        {
+            var propertyName = property.Name;
+            JToken propertyValue = property.Value;
+           
+            if (dataMap.Keys.Any(key => key == propertyName) && propertyValue != null)
+            {
+                string mapPropertyName = dataMap[propertyName];
+                if(string.IsNullOrEmpty(mapPropertyName)) 
+                {
+                    throw new Exception("map property name must set value !!!!");
+                }
+                var propertyType = propertyValue.Type;
+                if (propertyType == JTokenType.String)
+                {
+                    var currentValue = propertyValue.ToString();
+                    finalData.Add(mapPropertyName, currentValue);
+                }
+                else if (propertyType == JTokenType.Integer)
+                {
+                    var currentValue = Convert.ToInt32(propertyValue);
+                    finalData.Add(mapPropertyName, currentValue);
+                }
+                else if (propertyType == JTokenType.Boolean)
+                {
+                    var currentValue = Convert.ToBoolean(propertyValue);
+                    finalData.Add(mapPropertyName, currentValue);
+                }
+                else if (propertyType == JTokenType.Object)
+                {
+                    var childObject = new JObject();
+                    finalData.Add(mapPropertyName, childObject);
+                    var childDataObject = propertyValue.ToObject<JObject>();
+                    if (childDataObject != null)
+                    {
+                        MapDynamicData(childDataObject, dataMap, childObject);
+                    }
+                }
+            }
+
+        }
+
+    }
+
     public void MapJsonPropertyValue(JObject finalData, KeyValuePair<string, JToken?> perproty, Dictionary<string, List<DataMap>> dicNameAndDataMap)
     {
         var propertyName = perproty.Key;
