@@ -2,8 +2,10 @@
 
 public interface IServerService
 {
-    Task<bool> AddServer(string name, string description, string ipAddress, string userName, string password);
+    Task<bool> AddServer(Server server);
+    Task<bool> UpdateServer(Server server);
     Task<bool> RemoveServer(int id);
-    Task<List<Server>> GetServers(string keyword);
+    IQueryable<Server> GetServers(string keyword);
+    Task<Server> GetServerById(int id);
     Task<bool> CheckServerIsAlive(int id);
 }
