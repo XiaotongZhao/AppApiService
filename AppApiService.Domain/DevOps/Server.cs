@@ -9,7 +9,7 @@ public class Server : EntityBase<int>
     public string Password { get; set; }
     public string UserName { get; set; }
     public int? Port { get; set; }
-    public virtual List<ServerUploadFile> ServerUploadFiles { get; set; }
+    public bool IsConnect { get; set; }
 }
 
 public class ServerConfiguration : IEntityTypeConfiguration<Server>
@@ -24,7 +24,6 @@ public class ServerConfiguration : IEntityTypeConfiguration<Server>
 public class ServerUploadFile : EntityBase<int>
 {
     public int ServerId {  get; set; }
-    public virtual Server Server { get; set; }
     public string Name { get; set; }
     public byte[] FileContent { get; set; }
 }

@@ -20,6 +20,7 @@ public class EFContext : DbContext
     public virtual DbSet<Test> Tests { get; set; }
     public virtual DbSet<DataMap> DataMap { get; set; }
     public virtual DbSet<Server> Servers { get; set; }
+    public virtual DbSet<ServerUploadFile> ServerUploadFiles { get; set; }
     public override int SaveChanges()
     {
         ChangeTracker.DetectChanges();

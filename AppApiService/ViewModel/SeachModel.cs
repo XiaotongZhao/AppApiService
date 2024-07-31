@@ -1,9 +1,8 @@
 ﻿using AppApiService.Infrastructure.Common;
 
-namespace AppApiService.ViewModel
+namespace AppApiService.ViewModel;
+
+public class SeachModel : BaseSearch
 {
-    public class SeachModel : BaseSearch
-    {
-        public string Keyword { get; set; }
-    }
+    public string Keyword { get; set; }
 }

@@ -4,6 +4,7 @@ using AppApiService.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppApiService.Infrastructure.Repository.Migrations
 {
     [DbContext(typeof(EFContext))]
-    partial class EFContextModelSnapshot : ModelSnapshot
+    [Migration("20240731145204_CreateTableServer")]
+    partial class CreateTableServer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,9 +46,6 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.Property<string>("IpAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsConnect")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -102,6 +102,8 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ServerId");
 
                     b.ToTable("ServerUploadFiles");
                 });
@@ -220,6 +222,17 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.ToTable("Tests");
                 });
 
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServerUploadFile", b =>
+                {
+                    b.HasOne("AppApiService.Domain.DevOps.Server", "Server")
+                        .WithMany("ServerUploadFiles")
+                        .HasForeignKey("ServerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Server");
+                });
+
             modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataMap", b =>
                 {
                     b.HasOne("AppApiService.Domain.DynamicRequestDataService.DataMap", null)
@@ -234,6 +247,11 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         .HasForeignKey("DataMapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AppApiService.Domain.DevOps.Server", b =>
+                {
+                    b.Navigation("ServerUploadFiles");
                 });
 
             modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataMap", b =>

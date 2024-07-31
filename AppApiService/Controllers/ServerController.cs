@@ -32,10 +32,9 @@ public class ServerController : ControllerBase
     }
 
     [HttpGet, Route("CheckServerIsAlive")]
-    public async Task<bool> CheckServerIsAlive(int id)
+    public async Task CheckServerIsAlive(int id)
     {
-        var res = await serverService.CheckServerIsAlive(id);
-        return res;
+        await serverService.CheckServerIsAlive(id);
     }
 
     [HttpGet, Route("RemoveServer")]

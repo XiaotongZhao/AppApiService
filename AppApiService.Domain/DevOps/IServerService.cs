@@ -7,5 +7,5 @@ public interface IServerService
     Task<bool> RemoveServer(int id);
     IQueryable<Server> GetServers(string keyword);
     Task<Server> GetServerById(int id);
-    Task<bool> CheckServerIsAlive(int id);
+    Task CheckServerIsAlive(int id);
 }

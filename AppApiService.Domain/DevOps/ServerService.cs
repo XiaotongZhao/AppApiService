@@ -21,29 +21,45 @@ public class ServerService : IServerService
 
     public async Task<bool> UpdateServer(Server server)
     {
-         unitOfWork.Get().Set<Server>().Update(server);
+        unitOfWork.Get().Set<Server>().Update(server);
         var influenceCount = await unitOfWork.Get().SaveChangesAsync();
         return influenceCount > 0;
     }
 
-    public async Task<bool> CheckServerIsAlive(int id)
+    public async Task CheckServerIsAlive(int id)
     {
         var server = await unitOfWork.Get().Set<Server>().FindAsync(id);
+        var errorMessage = string.Empty;
         if (server != null)
         {
-            var userName = server.UserName;
-            var password = server.Password;
-            var ipAddress = server.IpAddress;
-            var port = server.Port ?? 0;
-            using (var client = new SshClient(ipAddress, port, userName, password))
+            try
             {
-                client.Connect();
-                return client.IsConnected;
+                var userName = server.UserName;
+                var password = server.Password;
+                var ipAddress = server.IpAddress;
+                var port = server.Port ?? 0;
+                using (var client = new SshClient(ipAddress, port, userName, password))
+                {
+                    client.Connect();
+                    server.IsConnect = client.IsConnected;
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                server.IsConnect = false;
+            }
+            finally
+            {
+                await unitOfWork.Get().SaveChangesAsync();
             }
         }
         else
-            throw new Exception("Server is not exist!");
-
+        {
+            throw new Exception("server is not exist!");
+        }
+        if (!string.IsNullOrEmpty(errorMessage))
+            throw new Exception(errorMessage);
     }
 
     public IQueryable<Server> GetServers(string keyword)
