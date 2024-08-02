@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AppApiService.Domain.Common;
-using AppApiService.Domain.DynamicRequestDataService;
-using AppApiService.Domain.TestService;
 using AppApiService.Domain.DevOps;
+using AppApiService.Domain.DynamicRequestDataService;
 
 namespace AppApiService.Infrastructure.Repository;
 
@@ -16,8 +15,6 @@ public class EFContext : DbContext
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseLazyLoadingProxies();
-
-    public virtual DbSet<Test> Tests { get; set; }
     public virtual DbSet<DataMap> DataMap { get; set; }
     public virtual DbSet<Server> Servers { get; set; }
     public virtual DbSet<ServerUploadFile> ServerUploadFiles { get; set; }

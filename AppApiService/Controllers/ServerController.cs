@@ -1,6 +1,7 @@
 using AppApiService.Domain.DevOps;
 using AppApiService.Infrastructure.Common;
 using AppApiService.ViewModel;
+using Newtonsoft.Json;
 
 namespace AppApiService.Controllers;
 
@@ -25,10 +26,25 @@ public class ServerController : ControllerBase
     }
 
     [HttpPost, Route("UpdateServer")]
-    public async Task<bool> UpdateServer(Server server)
+    public async Task<bool> UpdateServer(string serverContent, IFormFile[] files)
     {
-        var res = await serverService.UpdateServer(server);
-        return res;
+        if (!string.IsNullOrEmpty(serverContent))
+        {
+            var server = JsonConvert.DeserializeObject<Server>(serverContent);
+            if (server != null) 
+            {
+                var serverUploadFiles = await serverService.GetServerUploadFilesByServerId(server.Id);
+                foreach ( var file in files) 
+                {
+
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     [HttpGet, Route("CheckServerIsAlive")]
@@ -51,10 +67,10 @@ public class ServerController : ControllerBase
         return res;
     }
 
-    [HttpGet, Route("GetServerById")]
-    public async Task<Server> GetServerById(int id)
+    [HttpGet, Route("GetServerDetailById")]
+    public async Task<ServerDetail> GetServerDetailById(int id)
     {
-        var server = await serverService.GetServerById(id);
-        return server;
+        var serverDetail = await serverService.GetServerDetailById(id);
+        return serverDetail;
     }
 }

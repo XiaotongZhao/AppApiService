@@ -2,10 +2,11 @@
 
 public interface IServerService
 {
+    Task<List<ServerUploadFile>> GetServerUploadFilesByServerId(int serverId);
     Task<bool> AddServer(Server server);
-    Task<bool> UpdateServer(Server server);
+    Task<bool> UpdateServerDetail(ServerDetail server);
     Task<bool> RemoveServer(int id);
     IQueryable<Server> GetServers(string keyword);
-    Task<Server> GetServerById(int id);
+    Task<ServerDetail> GetServerDetailById(int id);
     Task CheckServerIsAlive(int id);
 }

@@ -12,20 +12,6 @@ public class ServerService : IServerService
         this.unitOfWork = unitOfWork;
     }
 
-    public async Task<bool> AddServer(Server server)
-    {
-        await unitOfWork.Get().Set<Server>().AddAsync(server);
-        var influenceCount = await unitOfWork.Get().SaveChangesAsync();
-        return influenceCount > 0;
-    }
-
-    public async Task<bool> UpdateServer(Server server)
-    {
-        unitOfWork.Get().Set<Server>().Update(server);
-        var influenceCount = await unitOfWork.Get().SaveChangesAsync();
-        return influenceCount > 0;
-    }
-
     public async Task CheckServerIsAlive(int id)
     {
         var server = await unitOfWork.Get().Set<Server>().FindAsync(id);
@@ -77,9 +63,37 @@ public class ServerService : IServerService
         return influenceCount > 0;
     }
 
-    public async Task<Server> GetServerById(int id)
+    public async Task<bool> AddServer(Server server)
     {
+        await unitOfWork.Get().Set<Server>().AddAsync(server);
+        var influenceCount = await unitOfWork.Get().SaveChangesAsync();
+        return influenceCount > 0;
+    }
+
+    public async Task<bool> UpdateServerDetail(ServerDetail serverDetail)
+    {
+        unitOfWork.Get().Set<Server>().Update(serverDetail.Server);
+        unitOfWork.Get().Set<ServerUploadFile>().UpdateRange(serverDetail.ServerUploadFiles);
+        var influenceCount = await unitOfWork.Get().SaveChangesAsync();
+        return influenceCount > 0;
+    }
+
+    public async Task<ServerDetail> GetServerDetailById(int id)
+    {
+        var serverDetail = new ServerDetail();
         var server = await unitOfWork.Get().Set<Server>().FindAsync(id);
-        return server;
+        var serverUploadFiles = await unitOfWork.Get().Set<ServerUploadFile>().Where(a => a.ServerId == id).ToListAsync();
+        if (server != null) 
+        {
+            serverDetail.Server = server;
+            serverDetail.ServerUploadFiles = serverUploadFiles;
+        }
+        return serverDetail;
+    }
+
+    public async Task<List<ServerUploadFile>> GetServerUploadFilesByServerId(int serverId)
+    {
+        var serverUploadFiles = await unitOfWork.Get().Set<ServerUploadFile>().Where(a => a.ServerId == serverId).ToListAsync();
+        return serverUploadFiles;
     }
 }

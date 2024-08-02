@@ -23,7 +23,7 @@ public class ServerConfiguration : IEntityTypeConfiguration<Server>
 [EntityTypeConfiguration(typeof(ServerUploadFileConfiguration))]
 public class ServerUploadFile : EntityBase<int>
 {
-    public int ServerId {  get; set; }
+    public int ServerId { get; set; }
     public string Name { get; set; }
     public byte[] FileContent { get; set; }
 }
@@ -34,4 +34,10 @@ public class ServerUploadFileConfiguration : IEntityTypeConfiguration<ServerUplo
     {
         builder.HasQueryFilter(a => !a.IsDeleted);
     }
+}
+
+public class ServerDetail
+{
+    public Server Server { get; set; }
+    public List<ServerUploadFile> ServerUploadFiles { get; set; }
 }
