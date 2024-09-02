@@ -31,15 +31,38 @@ public class ServerController : ControllerBase
         if (!string.IsNullOrEmpty(serverContent))
         {
             var server = JsonConvert.DeserializeObject<Server>(serverContent);
-            if (server != null) 
+            if (server != null)
             {
-                var serverUploadFiles = await serverService.GetServerUploadFilesByServerId(server.Id);
-                foreach ( var file in files) 
+                var serverDetail = new ServerDetail()
                 {
-
+                    Server = server
+                };
+                if (files.Length > 0)
+                {
+                    serverDetail.ServerUploadFiles = new List<ServerUploadFile>();
+                    foreach (var file in files)
+                    {
+                        byte[] fileContent;
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await file.CopyToAsync(memoryStream);
+                            fileContent = memoryStream.ToArray();
+                        }
+                        var serverUploadFile = new ServerUploadFile()
+                        {
+                            ServerId = server.Id,
+                            Name = file.FileName,
+                            ContentType = file.ContentType,
+                            FileContent = fileContent,
+                        };
+                        serverDetail.ServerUploadFiles.Add(serverUploadFile);
+                    }
                 }
+                var res = await serverService.UpdateServerDetail(serverDetail);
+                return res;
             }
-            return true;
+            else
+                throw new Exception("server doesn't exist!!");
         }
         else
         {
@@ -72,5 +95,20 @@ public class ServerController : ControllerBase
     {
         var serverDetail = await serverService.GetServerDetailById(id);
         return serverDetail;
+    }
+
+    [HttpGet, Route("DownloadFile")]
+    public async Task<IActionResult> DownloadFile(int serverUploadFileId)
+    {
+        var uploadFile = await serverService.GetServerUploadFileById(serverUploadFileId);
+        if (uploadFile != null)
+        {
+            var res = File(uploadFile.FileContent, uploadFile.ContentType, uploadFile.Name);
+            return res;
+        }
+        else 
+        {
+            throw new Exception("File doesn't exist !!!!");
+        }
     }
 }

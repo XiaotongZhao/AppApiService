@@ -1,4 +1,6 @@
-﻿namespace AppApiService.Domain.DevOps;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AppApiService.Domain.DevOps;
 
 [EntityTypeConfiguration(typeof(ServerConfiguration))]
 public class Server : EntityBase<int>
@@ -25,6 +27,8 @@ public class ServerUploadFile : EntityBase<int>
 {
     public int ServerId { get; set; }
     public string Name { get; set; }
+    [MaxLength(50)]
+    public string ContentType { get; set; }
     public byte[] FileContent { get; set; }
 }
 

@@ -91,9 +91,9 @@ public class ServerService : IServerService
         return serverDetail;
     }
 
-    public async Task<List<ServerUploadFile>> GetServerUploadFilesByServerId(int serverId)
+    public async Task<ServerUploadFile> GetServerUploadFileById(int id)
     {
-        var serverUploadFiles = await unitOfWork.Get().Set<ServerUploadFile>().Where(a => a.ServerId == serverId).ToListAsync();
-        return serverUploadFiles;
+        var serverUploadFile = await unitOfWork.Get().Set<ServerUploadFile>().FindAsync(id);
+        return serverUploadFile;
     }
 }

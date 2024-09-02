@@ -77,7 +77,7 @@ void ConfigureLogging()
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Console()
-            .WriteTo.Elasticsearch(ConfigureElasticSink(elasticAddress, userName, password, environment))
+            //.WriteTo.Elasticsearch(ConfigureElasticSink(elasticAddress, userName, password, environment))
             .Enrich.WithProperty("Environment", environment)
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
