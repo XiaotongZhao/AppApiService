@@ -2,6 +2,7 @@
 
 public interface IServerService
 {
+    Task<bool> DeleteServerUploadFileById(int id);
     Task<ServerUploadFile> GetServerUploadFileById(int id);
     Task<bool> AddServer(Server server);
     Task<bool> UpdateServerDetail(ServerDetail server);

@@ -106,9 +106,17 @@ public class ServerController : ControllerBase
             var res = File(uploadFile.FileContent, uploadFile.ContentType, uploadFile.Name);
             return res;
         }
-        else 
+        else
         {
             throw new Exception("File doesn't exist !!!!");
         }
+    }
+
+
+    [HttpGet, Route("DeleteServerUploadFileById")]
+    public async Task<bool> DeleteServerUploadFileById(int serverUploadFileId)
+    {
+        var res = await serverService.DeleteServerUploadFileById(serverUploadFileId);
+        return res;
     }
 }

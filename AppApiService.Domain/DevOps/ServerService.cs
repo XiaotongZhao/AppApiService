@@ -83,7 +83,7 @@ public class ServerService : IServerService
         var serverDetail = new ServerDetail();
         var server = await unitOfWork.Get().Set<Server>().FindAsync(id);
         var serverUploadFiles = await unitOfWork.Get().Set<ServerUploadFile>().Where(a => a.ServerId == id).ToListAsync();
-        if (server != null) 
+        if (server != null)
         {
             serverDetail.Server = server;
             serverDetail.ServerUploadFiles = serverUploadFiles;
@@ -95,5 +95,14 @@ public class ServerService : IServerService
     {
         var serverUploadFile = await unitOfWork.Get().Set<ServerUploadFile>().FindAsync(id);
         return serverUploadFile;
+    }
+
+    public async Task<bool> DeleteServerUploadFileById(int id)
+    {
+        var serverUploadFile = await unitOfWork.Get().Set<ServerUploadFile>().FindAsync(id);
+        if (serverUploadFile != null)
+            serverUploadFile.IsDeleted = true;
+        var influenceCount = await unitOfWork.Get().SaveChangesAsync();
+        return influenceCount > 0;
     }
 }
