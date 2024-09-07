@@ -2,6 +2,7 @@
 using AppApiService.Domain.Common;
 using AppApiService.Domain.DevOps;
 using AppApiService.Domain.DynamicRequestDataService;
+using AppApiService.Domain.DevOps.ServiceTask;
 
 namespace AppApiService.Infrastructure.Repository;
 
@@ -18,6 +19,9 @@ public class EFContext : DbContext
     public virtual DbSet<DataMap> DataMap { get; set; }
     public virtual DbSet<Server> Servers { get; set; }
     public virtual DbSet<ServerUploadFile> ServerUploadFiles { get; set; }
+    public virtual DbSet<Service> Services { get; set; }
+    public virtual DbSet<ServiceTask> ServiceTasks { get; set; }
+
     public override int SaveChanges()
     {
         ChangeTracker.DetectChanges();
