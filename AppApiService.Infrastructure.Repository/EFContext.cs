@@ -21,6 +21,8 @@ public class EFContext : DbContext
     public virtual DbSet<ServerUploadFile> ServerUploadFiles { get; set; }
     public virtual DbSet<Service> Services { get; set; }
     public virtual DbSet<ServiceTask> ServiceTasks { get; set; }
+    public virtual DbSet<DeployService> DeployServices { get; set; }
+    public virtual DbSet<DeployServiceTask> DeployServiceTasks { get; set; }
 
     public override int SaveChanges()
     {
