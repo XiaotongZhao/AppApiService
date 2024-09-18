@@ -1,11 +1,13 @@
-﻿namespace AppApiService.Domain.DevOps.ServiceTask;
+﻿using static AppApiService.Domain.Common.CommonValue;
+
+namespace AppApiService.Domain.DevOps.ServiceTask;
 
 [EntityTypeConfiguration(typeof(DeployServiceConfiguration))]
 public class DeployService : EntityBase<int>
 {
     public int ServiceId { get; set; }
-    public string Result { get; set; }
     public int ServerId { get; set; }
+    public DeployServiceStatus DeployServiceStatus { get; set; }
 }
 
 public class DeployServiceConfiguration : IEntityTypeConfiguration<DeployService>
@@ -19,12 +21,10 @@ public class DeployServiceConfiguration : IEntityTypeConfiguration<DeployService
 [EntityTypeConfiguration(typeof(DeployServiceTaskConfiguration))]
 public class DeployServiceTask : EntityBase<int>
 {
-    public int StepNo { get; set; }
     public int ServiceId { get; set; }
-    public int TaskId { get; set; }
-    public string TaskStatus { get; set; }
-    public string ExcuteResult { get; set; }
+    public string OutputResult { get; set; }
     public string OutputLog { get; set; }
+    public DeployServiceTaskStatus TaskStatus { get; set; }
 }
 public class DeployServiceTaskConfiguration : IEntityTypeConfiguration<DeployServiceTask>
 {

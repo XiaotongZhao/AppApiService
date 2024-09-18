@@ -1,7 +1,7 @@
 Set-Location -Path "../AppApiService"
 
 # Set migration name
-$migrationName = "CreateTableServiceTask"
+$migrationName = "ChangeTableServiceTask"
 
 # Set project path
 $projectPath = "../AppApiService.Infrastructure.Repository"
