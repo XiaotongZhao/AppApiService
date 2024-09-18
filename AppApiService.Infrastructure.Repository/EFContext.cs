@@ -19,10 +19,10 @@ public class EFContext : DbContext
     public virtual DbSet<DataMap> DataMap { get; set; }
     public virtual DbSet<Server> Servers { get; set; }
     public virtual DbSet<ServerUploadFile> ServerUploadFiles { get; set; }
-    public virtual DbSet<Service> Services { get; set; }
-    public virtual DbSet<ServiceTask> ServiceTasks { get; set; }
-    public virtual DbSet<DeployService> DeployServices { get; set; }
-    public virtual DbSet<DeployServiceTask> DeployServiceTasks { get; set; }
+    public virtual DbSet<Pipeline> Pipelines { get; set; }
+    public virtual DbSet<PipelineTask> PipelineTasks { get; set; }
+    public virtual DbSet<DeployPipeline> DeployPipelines { get; set; }
+    public virtual DbSet<DeployPipelineTask> DeployPipelineTasks { get; set; }
 
     public override int SaveChanges()
     {

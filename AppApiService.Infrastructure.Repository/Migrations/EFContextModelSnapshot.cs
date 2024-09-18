@@ -111,7 +111,7 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.ToTable("ServerUploadFiles");
                 });
 
-            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.DeployService", b =>
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.DeployPipeline", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,10 +139,10 @@ namespace AppApiService.Infrastructure.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeployServices");
+                    b.ToTable("DeployPipelines");
                 });
 
-            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.DeployServiceTask", b =>
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.DeployPipelineTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -175,10 +175,10 @@ namespace AppApiService.Infrastructure.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeployServiceTasks");
+                    b.ToTable("DeployPipelineTasks");
                 });
 
-            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.Service", b =>
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.Pipeline", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -188,6 +188,10 @@ namespace AppApiService.Infrastructure.Repository.Migrations
 
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Desciption")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -199,16 +203,12 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ServiceDesciption")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Services");
+                    b.ToTable("Pipelines");
                 });
 
-            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.ServiceTask", b =>
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.PipelineTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -224,6 +224,9 @@ namespace AppApiService.Infrastructure.Repository.Migrations
 
                     b.Property<DateTime?>("LastModifyOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("PipelineId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Script")
                         .IsRequired()
@@ -248,9 +251,9 @@ namespace AppApiService.Infrastructure.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ServiceId");
+                    b.HasIndex("PipelineId");
 
-                    b.ToTable("ServiceTasks");
+                    b.ToTable("PipelineTasks");
                 });
 
             modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataMap", b =>
@@ -332,13 +335,11 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.ToTable("DataValueMap");
                 });
 
-            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.ServiceTask", b =>
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.PipelineTask", b =>
                 {
-                    b.HasOne("AppApiService.Domain.DevOps.ServiceTask.Service", null)
-                        .WithMany("ServiceTasks")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("AppApiService.Domain.DevOps.ServiceTask.Pipeline", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("PipelineId");
                 });
 
             modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataMap", b =>
@@ -357,9 +358,9 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.Service", b =>
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.Pipeline", b =>
                 {
-                    b.Navigation("ServiceTasks");
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataMap", b =>
