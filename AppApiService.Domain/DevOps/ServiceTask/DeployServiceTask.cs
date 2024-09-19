@@ -2,14 +2,28 @@
 
 public class DeployServiceTask : IDeployServiceTask
 {
-    public Task<bool> CreatePipeline(Pipeline pipeline)
+    private IUnitOfWork unitOfWork;
+    public void DeployPipelineTask(IUnitOfWork unitOfWork)
     {
-        throw new NotImplementedException();
+        this.unitOfWork = unitOfWork;
     }
 
-    public Task DeployPipeline(int pipelineId)
+    public async Task<bool> CreatePipeline(Pipeline pipeline)
     {
-        throw new NotImplementedException();
+        var pipelines = unitOfWork.Get().Set<Pipeline>();
+        await pipelines.AddAsync(pipeline);
+        var influenceCount = await unitOfWork.Get().SaveChangesAsync();
+        return influenceCount > 0;
+    }
+
+    public async Task DeployPipeline(int pipelineId)
+    {
+        var pipeline = await unitOfWork.Get().Set<Pipeline>().FindAsync(pipelineId);
+        if(pipeline != null) 
+        {
+            var tasks = pipeline.Tasks;
+
+        }
     }
 
     public Task<DeployPipeline> GetDeployPipelineDetailByDeployPipelineId(int deployPipelineId)
