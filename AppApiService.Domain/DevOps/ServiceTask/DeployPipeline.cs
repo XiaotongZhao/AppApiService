@@ -5,9 +5,10 @@ namespace AppApiService.Domain.DevOps.ServiceTask;
 [EntityTypeConfiguration(typeof(DeployPipelineConfiguration))]
 public class DeployPipeline : EntityBase<int>
 {
-    public int ServiceId { get; set; }
+    public int PipelineId { get; set; }
     public int ServerId { get; set; }
-    public DeployServiceStatus DeployServiceStatus { get; set; }
+    public DeployPipelineStatus DeployPipelineStatus { get; set; }
+    public virtual List<DeployPipelineTask> DeployPipelineTasks { get; set; }
 }
 
 public class DeployPipelineConfiguration : IEntityTypeConfiguration<DeployPipeline>
@@ -21,10 +22,12 @@ public class DeployPipelineConfiguration : IEntityTypeConfiguration<DeployPipeli
 [EntityTypeConfiguration(typeof(DeployPipelineTaskConfiguration))]
 public class DeployPipelineTask : EntityBase<int>
 {
-    public int ServiceId { get; set; }
+    public int DeployPipelineId { get; set; }
+    public virtual DeployPipeline DeployPipeline { get; set; }
+    public int TaskId { get; set; }
     public string OutputResult { get; set; }
     public string OutputLog { get; set; }
-    public DeployServiceTaskStatus TaskStatus { get; set; }
+    public DeployPipelineTaskStatus TaskStatus { get; set; }
 }
 public class DeployPipelineTaskConfiguration : IEntityTypeConfiguration<DeployPipelineTask>
 {

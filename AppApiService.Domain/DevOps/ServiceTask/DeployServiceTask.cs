@@ -16,13 +16,33 @@ public class DeployServiceTask : IDeployServiceTask
         return influenceCount > 0;
     }
 
-    public async Task DeployPipeline(int pipelineId)
+    public async Task DeployPipeline(int pipelineId, int serverId)
     {
         var pipeline = await unitOfWork.Get().Set<Pipeline>().FindAsync(pipelineId);
         if(pipeline != null) 
         {
+            var deployPipeline = new DeployPipeline
+            {
+                PipelineId = pipelineId,
+                ServerId = serverId,
+                DeployPipelineStatus = CommonValue.DeployPipelineStatus.ReadyToDeploy
+            };
             var tasks = pipeline.Tasks;
+            foreach(var task in tasks) 
+            {
+                var deployPipelineTak = new DeployPipelineTask()
+                {
+                    TaskId = task.Id,
+                    TaskStatus = CommonValue.DeployPipelineTaskStatus.ReadyToExcecute
+                };
+                deployPipeline.DeployPipelineTasks.Add(deployPipelineTak);
+            }
+            unitOfWork.Get().Set<DeployPipeline>().Add(deployPipeline);
+            var influceCount = await unitOfWork.Get().SaveChangesAsync();
+            if(influceCount > 0) 
+            {
 
+            }
         }
     }
 

@@ -23,7 +23,7 @@ public class PipelineTask : EntityBase<int>
     public int StepNo { get; set; }
     public string TaskName { get; set; }
     public string TaskDescription { get; set; }
-    public int ServiceId { get; set; }
+    public int PipelineId { get; set; }
     public string Script { get; set; }
     public int? ServerFileId { get; set; }
 }

@@ -2,17 +2,19 @@
 
 public static class CommonValue
 {
-    public enum DeployServiceStatus
+    public enum DeployPipelineStatus
     {
         Success,
         Failure,
-        Deploying
+        Deploying,
+        ReadyToDeploy
     }
 
-    public enum DeployServiceTaskStatus
+    public enum DeployPipelineTaskStatus
     {
         Success,
         Failure,
-        Pending
+        Pending,
+        ReadyToExcecute
     }
 }
