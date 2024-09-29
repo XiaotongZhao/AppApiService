@@ -78,10 +78,10 @@ public class DeployPipelineService : IDeployPipelineService
                             if (checkTaskUpdate)
                             {
                                 var command = task.Command;
+                                task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Executing;
+                                await unitOfWork.Get().SaveChangesAsync();
                                 using (var sshCommand = client.RunCommand(command))
                                 {
-                                    task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Executing;
-                                    await unitOfWork.Get().SaveChangesAsync();
                                     var outputMessage = sshCommand.Result;
                                     var exitStatus = sshCommand.ExitStatus;
                                     if (exitStatus != 0)
