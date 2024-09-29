@@ -1,7 +1,7 @@
 Set-Location -Path "../AppApiService"
 
 # Set migration name
-$migrationName = "CreateDB"
+$migrationName = "ChangeTableDeployPipeline"
 
 # Set project path
 $projectPath = "../AppApiService.Infrastructure.Repository"

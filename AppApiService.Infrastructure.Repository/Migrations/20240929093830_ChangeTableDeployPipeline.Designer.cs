@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppApiService.Infrastructure.Repository.Migrations
 {
     [DbContext(typeof(EFContext))]
-    [Migration("20240918095053_CreateDB")]
-    partial class CreateDB
+    [Migration("20240929093830_ChangeTableDeployPipeline")]
+    partial class ChangeTableDeployPipeline
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -125,8 +125,11 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DeployServiceStatus")
+                    b.Property<int>("DeployPipelineStatus")
                         .HasColumnType("int");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -134,10 +137,10 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.Property<DateTime?>("LastModifyOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ServerId")
+                    b.Property<int>("PipelineId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ServiceId")
+                    b.Property<int>("ServerId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -153,8 +156,15 @@ namespace AppApiService.Infrastructure.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Command")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("CreatedOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DeployPipelineId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -163,20 +173,24 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("OutputLog")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OutputResult")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ServiceId")
+                    b.Property<int>("TaskId")
                         .HasColumnType("int");
+
+                    b.Property<string>("TaskName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TaskStatus")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeployPipelineId");
 
                     b.ToTable("DeployPipelineTasks");
                 });
@@ -228,7 +242,7 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.Property<DateTime?>("LastModifyOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PipelineId")
+                    b.Property<int>("PipelineId")
                         .HasColumnType("int");
 
                     b.Property<string>("Script")
@@ -236,9 +250,6 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ServerFileId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
                     b.Property<int>("StepNo")
@@ -338,11 +349,24 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     b.ToTable("DataValueMap");
                 });
 
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.DeployPipelineTask", b =>
+                {
+                    b.HasOne("AppApiService.Domain.DevOps.ServiceTask.DeployPipeline", "DeployPipeline")
+                        .WithMany("DeployPipelineTasks")
+                        .HasForeignKey("DeployPipelineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeployPipeline");
+                });
+
             modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.PipelineTask", b =>
                 {
                     b.HasOne("AppApiService.Domain.DevOps.ServiceTask.Pipeline", null)
                         .WithMany("Tasks")
-                        .HasForeignKey("PipelineId");
+                        .HasForeignKey("PipelineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AppApiService.Domain.DynamicRequestDataService.DataMap", b =>
@@ -359,6 +383,11 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         .HasForeignKey("DataMapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.DeployPipeline", b =>
+                {
+                    b.Navigation("DeployPipelineTasks");
                 });
 
             modelBuilder.Entity("AppApiService.Domain.DevOps.ServiceTask.Pipeline", b =>

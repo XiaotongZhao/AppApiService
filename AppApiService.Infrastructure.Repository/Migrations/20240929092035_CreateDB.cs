@@ -43,9 +43,10 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    PipelineId = table.Column<int>(type: "int", nullable: false),
                     ServerId = table.Column<int>(type: "int", nullable: false),
-                    DeployServiceStatus = table.Column<int>(type: "int", nullable: false),
+                    ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DeployPipelineStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifyOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -53,25 +54,6 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DeployPipelines", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DeployPipelineTasks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    OutputResult = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OutputLog = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TaskStatus = table.Column<int>(type: "int", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifyOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DeployPipelineTasks", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -157,6 +139,34 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DeployPipelineTasks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DeployPipelineId = table.Column<int>(type: "int", nullable: false),
+                    TaskName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    Command = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OutputResult = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OutputLog = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TaskStatus = table.Column<int>(type: "int", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifyOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeployPipelineTasks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeployPipelineTasks_DeployPipelines_DeployPipelineId",
+                        column: x => x.DeployPipelineId,
+                        principalTable: "DeployPipelines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PipelineTasks",
                 columns: table => new
                 {
@@ -165,10 +175,9 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                     StepNo = table.Column<int>(type: "int", nullable: false),
                     TaskName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TaskDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    PipelineId = table.Column<int>(type: "int", nullable: false),
                     Script = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ServerFileId = table.Column<int>(type: "int", nullable: true),
-                    PipelineId = table.Column<int>(type: "int", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     LastModifyOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -180,7 +189,8 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                         name: "FK_PipelineTasks_Pipelines_PipelineId",
                         column: x => x.PipelineId,
                         principalTable: "Pipelines",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -194,6 +204,11 @@ namespace AppApiService.Infrastructure.Repository.Migrations
                 column: "DataMapId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DeployPipelineTasks_DeployPipelineId",
+                table: "DeployPipelineTasks",
+                column: "DeployPipelineId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PipelineTasks_PipelineId",
                 table: "PipelineTasks",
                 column: "PipelineId");
@@ -204,9 +219,6 @@ namespace AppApiService.Infrastructure.Repository.Migrations
         {
             migrationBuilder.DropTable(
                 name: "DataValueMap");
-
-            migrationBuilder.DropTable(
-                name: "DeployPipelines");
 
             migrationBuilder.DropTable(
                 name: "DeployPipelineTasks");
@@ -222,6 +234,9 @@ namespace AppApiService.Infrastructure.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "DataMap");
+
+            migrationBuilder.DropTable(
+                name: "DeployPipelines");
 
             migrationBuilder.DropTable(
                 name: "Pipelines");

@@ -1,6 +1,6 @@
 ﻿namespace AppApiService.Domain.DevOps.ServiceTask;
 
-public interface IDeployServiceTask
+public interface IDeployPipelineService
 {
     Task<bool> CreatePipeline(Pipeline pipeline);
     Task<Pipeline> GetPipelineDetailById(int id);
