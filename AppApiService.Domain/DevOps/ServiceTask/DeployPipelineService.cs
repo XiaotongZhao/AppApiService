@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using AppApiService.Domain.DevOps.AgentServer;
 using Renci.SshNet;
+using static AppApiService.Domain.Common.CommonValue;
 
 namespace AppApiService.Domain.DevOps.ServiceTask;
 
@@ -136,5 +137,34 @@ public class DeployPipelineService : IDeployPipelineService
     {
         var pipeline = await unitOfWork.Get().Set<Pipeline>().FindAsync(id);
         return pipeline;
+    }
+
+    public IQueryable<Pipeline> GetPipelines(string keyword)
+    {
+        var query = unitOfWork.Get().Set<Pipeline>().Where(a => a.Name.Contains(keyword))
+            .Select(a => new Pipeline
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Description = a.Description,
+                CreatedOn = a.CreatedOn,
+                LastModifyOn = a.LastModifyOn
+            });
+        return query;
+    }
+
+    public IQueryable<DeployPipeline> GetDeployPipelinesByPipelineId(int pipelineId)
+    {
+        var query = unitOfWork.Get().Set<DeployPipeline>().Where(a => a.PipelineId == pipelineId)
+            .Select(a => new DeployPipeline 
+            {
+                Id = a.Id,
+                PipelineId = a.PipelineId,
+                ServerId = a.ServerId,
+                ErrorMessage = a.ErrorMessage,
+                DeployPipelineStatus = a.DeployPipelineStatus,
+                CreatedOn = a.CreatedOn
+            });
+        return query;
     }
 }

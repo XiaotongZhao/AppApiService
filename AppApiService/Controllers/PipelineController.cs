@@ -1,4 +1,6 @@
 ﻿using AppApiService.Domain.DevOps.ServiceTask;
+using AppApiService.Infrastructure.Common;
+using AppApiService.ViewModel;
 
 namespace AppApiService.Controllers;
 
@@ -40,5 +42,19 @@ public class PipelineController : ControllerBase
     {
         var deployPipeline = await deployPipelineService.GetDeployPipelineDetailByDeployPipelineId(deployPipelineId);
         return deployPipeline;
+    }
+
+    [HttpPost, Route("GetPipelines")]
+    public async Task<DataSource<Pipeline>> GetPipelines(SeachModel seachModel)
+    {
+        var res = await deployPipelineService.GetPipelines(seachModel.Keyword).TakePageDataAndCountAsync(seachModel.Skip, seachModel.Size);
+        return res;
+    }
+
+    [HttpGet, Route("GetDeployPipelinesByPipelineId")]
+    public async Task<DataSource<DeployPipeline>> GetDeployPipelinesByPipelineId(int pipelineId, int skip, int size)
+    {
+        var res = await deployPipelineService.GetDeployPipelinesByPipelineId(pipelineId).TakePageDataAndCountAsync(skip, size);
+        return res;
     }
 }

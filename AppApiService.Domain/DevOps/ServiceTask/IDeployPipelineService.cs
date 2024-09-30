@@ -6,4 +6,6 @@ public interface IDeployPipelineService
     Task<Pipeline> GetPipelineDetailById(int id);
     Task DeployPipeline(int pipelineId, int serverId);
     Task<DeployPipeline> GetDeployPipelineDetailByDeployPipelineId(int deployPipelineId);
+    IQueryable<Pipeline> GetPipelines(string keyword);
+    IQueryable<DeployPipeline> GetDeployPipelinesByPipelineId(int pipelineId);
 }
