@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppApiService.Domain.DevOps;
+namespace AppApiService.Domain.DevOps.AgentServer;
 
 [EntityTypeConfiguration(typeof(ServerConfiguration))]
 public class Server : EntityBase<int>

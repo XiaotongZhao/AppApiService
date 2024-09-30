@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AppApiService.Domain.DevOps.AgentServer;
+using Microsoft.Extensions.Logging;
 using Renci.SshNet;
 
 namespace AppApiService.Domain.DevOps.Artifactory.Nexus;

@@ -1,7 +1,6 @@
-﻿
-using Renci.SshNet;
+﻿using Renci.SshNet;
 
-namespace AppApiService.Domain.DevOps;
+namespace AppApiService.Domain.DevOps.AgentServer;
 
 public class ServerService : IServerService
 {

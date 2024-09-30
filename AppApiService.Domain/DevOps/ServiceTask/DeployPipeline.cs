@@ -24,7 +24,6 @@ public class DeployPipelineConfiguration : IEntityTypeConfiguration<DeployPipeli
 public class DeployPipelineTask : EntityBase<int>
 {
     public int DeployPipelineId { get; set; }
-    public virtual DeployPipeline DeployPipeline { get; set; }
     public string TaskName { get; set; }
     public int TaskId { get; set; }
     public string Command { get; set; }

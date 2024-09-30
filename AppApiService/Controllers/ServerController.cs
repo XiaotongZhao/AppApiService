@@ -1,4 +1,4 @@
-using AppApiService.Domain.DevOps;
+using AppApiService.Domain.DevOps.AgentServer;
 using AppApiService.Infrastructure.Common;
 using AppApiService.ViewModel;
 using Newtonsoft.Json;

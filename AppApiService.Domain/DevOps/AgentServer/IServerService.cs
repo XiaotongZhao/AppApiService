@@ -1,4 +1,4 @@
-﻿namespace AppApiService.Domain.DevOps;
+﻿namespace AppApiService.Domain.DevOps.AgentServer;
 
 public interface IServerService
 {
