@@ -164,7 +164,7 @@ public class DeployPipelineService : IDeployPipelineService
                 ErrorMessage = a.ErrorMessage,
                 DeployPipelineStatus = a.DeployPipelineStatus,
                 CreatedOn = a.CreatedOn
-            });
+            }).OrderByDescending(a => a.Id);
         return query;
     }
 }
