@@ -1,4 +1,5 @@
-﻿using AppApiService.Domain.DynamicRequestDataService;
+﻿using AppApiService.Common;
+using AppApiService.Domain.DynamicRequestDataService;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -10,6 +11,7 @@ namespace AppApiService.Controllers
     [ApiController]
     public class DynamicController : ControllerBase
     {
+        private static LogService logService = new LogService();
         private readonly IDynamicDataService dynamicDataService;
         public DynamicController(IDynamicDataService dynamicDataService)
         {
@@ -52,6 +54,12 @@ namespace AppApiService.Controllers
             dataMap.Add("Description", "MapDescription");
             dynamicDataService.MapDynamicData(jsonObject, dataMap, finalData);
             return finalData.ToString();
+        }
+
+        [HttpPost, Route("TestLog")]
+        public void TestLog(LogInfor logInfor)
+        {
+            logService.EnqueueLog(logInfor.LogInformation);
         }
 
     }
