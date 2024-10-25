@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using AppApiService.Domain.DevOps.AgentServer;
 using Renci.SshNet;
+using Newtonsoft.Json;
 
 namespace AppApiService.Domain.DevOps.ServiceTask;
 
 public class DeployPipelineService : IDeployPipelineService
 {
+    private readonly string deployPipelineLogFolderPath = "/Local/DeployPipeline/";
     private IUnitOfWork unitOfWork;
     private readonly IServiceScopeFactory scopeFactory;
     public DeployPipelineService(IUnitOfWork unitOfWork, IServiceScopeFactory scopeFactory)
@@ -50,77 +52,98 @@ public class DeployPipelineService : IDeployPipelineService
             var influceCount = await unitOfWork.Get().SaveChangesAsync();
             if (influceCount > 0)
             {
-                var task = Task.Run(async () =>
-                 {
-                     await startToDeployPipeline(deployPipeline);
-                 });
+                var server = await unitOfWork.Get().Set<Server>().FindAsync(serverId);
+                if (server != null)
+                {
+                    var task = Task.Run(async () =>
+                    {
+                        await startToDeployPipeline(deployPipeline, server);
+                    });
+                }
             }
         }
     }
 
-    private async Task startToDeployPipeline(DeployPipeline deployPipeline)
+    private async Task saveDeployPipelineToLocalHost(DeployPipeline deployPipeline)
+    {
+        if(!Directory.Exists(deployPipelineLogFolderPath))
+        {
+            Directory.CreateDirectory(deployPipelineLogFolderPath);
+        }
+        var filePath = $"{deployPipelineLogFolderPath}{deployPipeline.Id}.json";
+        var deployPipelineText = JsonConvert.SerializeObject(deployPipeline);
+        await File.WriteAllTextAsync(filePath, deployPipelineText);
+    }
+
+    private async Task<DeployPipeline> getDeployPipelineFromLocalAsync(int id)
+    {
+        DeployPipeline? deployPipeline = null;
+        var filePath = $"{deployPipelineLogFolderPath}{id}.json";
+        var jsonContent = await File.ReadAllTextAsync(filePath);
+        if (!string.IsNullOrEmpty(jsonContent))
+        {
+            deployPipeline = JsonConvert.DeserializeObject<DeployPipeline>(jsonContent);
+        }
+        return deployPipeline;
+    }
+
+    private async Task startToDeployPipeline(DeployPipeline deployPipeline, Server server)
     {
         using (var scope = scopeFactory.CreateScope())
         {
-            var currentUnitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             deployPipeline.DeployPipelineStatus = CommonValue.DeployPipelineStatus.Deploying;
-            currentUnitOfWork.Get().Update(deployPipeline);
-            var checkDeployPipepineStatus = await currentUnitOfWork.Get().SaveChangesAsync() > 0;
-            if (checkDeployPipepineStatus)
+            await saveDeployPipelineToLocalHost(deployPipeline);
+            if (server != null)
             {
-                var serverId = deployPipeline.ServerId;
-                var server = await currentUnitOfWork.Get().Set<Server>().FindAsync(serverId);
-                if (server != null)
+                using var client = new SshClient(server.IpAddress, server.UserName, server.Password);
+                try
                 {
-                    using var client = new SshClient(server.IpAddress, server.UserName, server.Password);
-                    try
+                    client.Connect();
+                    var tasks = deployPipeline.DeployPipelineTasks;
+                    foreach (var task in tasks)
                     {
-                        client.Connect();
-                        var tasks = deployPipeline.DeployPipelineTasks;
-                        foreach (var task in tasks)
+                        task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Pending;
+                        await saveDeployPipelineToLocalHost(deployPipeline);
+                        var command = task.Command;
+                        task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Executing;
+                        await saveDeployPipelineToLocalHost(deployPipeline);
+                        using (var sshCommand = client.RunCommand(command))
                         {
-                            task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Pending;
-                            var checkTaskUpdate = await currentUnitOfWork.Get().SaveChangesAsync() > 0;
-                            if (checkTaskUpdate)
+                            var outputMessage = sshCommand.Result;
+                            var exitStatus = sshCommand.ExitStatus;
+                            if (exitStatus != 0)
                             {
-                                var command = task.Command;
-                                task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Executing;
-                                await currentUnitOfWork.Get().SaveChangesAsync();
-                                using (var sshCommand = client.RunCommand(command))
-                                {
-                                    var outputMessage = sshCommand.Result;
-                                    var exitStatus = sshCommand.ExitStatus;
-                                    if (exitStatus != 0)
-                                    {
-                                        task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Failure;
-                                    }
-                                    else
-                                    {
-                                        task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Success;
-                                    }
-                                    task.OutputResult = outputMessage;
-                                    task.OutputLog = sshCommand.CommandText;
-                                }
+                                task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Failure;
                             }
-                            await currentUnitOfWork.Get().SaveChangesAsync();
-                            if (task.TaskStatus == CommonValue.DeployPipelineTaskStatus.Failure)
+                            else
                             {
-                                var errorMessage = $"Task {task.TaskName} execute failed, output message : {task.OutputResult}";
-                                throw new Exception(errorMessage);
+                                task.TaskStatus = CommonValue.DeployPipelineTaskStatus.Success;
                             }
+                            task.OutputResult = outputMessage;
+                            task.OutputLog = sshCommand.CommandText;
+                            await saveDeployPipelineToLocalHost(deployPipeline);
                         }
-                        deployPipeline.DeployPipelineStatus = CommonValue.DeployPipelineStatus.Success;
+                        if (task.TaskStatus == CommonValue.DeployPipelineTaskStatus.Failure)
+                        {
+                            var errorMessage = $"Task {task.TaskName} execute failed, output message : {task.OutputResult}";
+                            throw new Exception(errorMessage);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        deployPipeline.ErrorMessage = ex.Message;
-                        deployPipeline.DeployPipelineStatus = CommonValue.DeployPipelineStatus.Failure;
-                    }
-                    finally
-                    {
-                        client.Disconnect();
-                        await currentUnitOfWork.Get().SaveChangesAsync();
-                    }
+                    deployPipeline.DeployPipelineStatus = CommonValue.DeployPipelineStatus.Success;
+                    await saveDeployPipelineToLocalHost(deployPipeline);
+                }
+                catch (Exception ex)
+                {
+                    deployPipeline.ErrorMessage = ex.Message;
+                    deployPipeline.DeployPipelineStatus = CommonValue.DeployPipelineStatus.Failure;
+                    await saveDeployPipelineToLocalHost(deployPipeline);
+                }
+                finally
+                {
+                    client.Disconnect();
+                    var currentUnitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                    currentUnitOfWork.Get().Set<DeployPipeline>().Update(deployPipeline);
+                    await currentUnitOfWork.Get().SaveChangesAsync();
                 }
             }
         }
@@ -128,7 +151,9 @@ public class DeployPipelineService : IDeployPipelineService
 
     public async Task<DeployPipeline> GetDeployPipelineDetailByDeployPipelineId(int deployPipelineId)
     {
-        var deployPipeline = await unitOfWork.Get().Set<DeployPipeline>().FindAsync(deployPipelineId);
+        var deployPipeline = await getDeployPipelineFromLocalAsync(deployPipelineId);
+        if (deployPipeline == null)
+            deployPipeline = await unitOfWork.Get().Set<DeployPipeline>().FindAsync(deployPipelineId);
         return deployPipeline;
     }
 
@@ -155,7 +180,7 @@ public class DeployPipelineService : IDeployPipelineService
     public IQueryable<DeployPipeline> GetDeployPipelinesByPipelineId(int pipelineId)
     {
         var query = unitOfWork.Get().Set<DeployPipeline>().Where(a => a.PipelineId == pipelineId)
-            .Select(a => new DeployPipeline 
+            .Select(a => new DeployPipeline
             {
                 Id = a.Id,
                 PipelineId = a.PipelineId,
