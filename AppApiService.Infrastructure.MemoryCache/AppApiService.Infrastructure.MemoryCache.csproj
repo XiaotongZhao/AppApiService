@@ -9,6 +9,7 @@
   <ItemGroup>
     <Folder Include="MongoDB\" />
     <Folder Include="Redis\" />
+    <Folder Include="LocalDocument\" />
   </ItemGroup>
 
 </Project>

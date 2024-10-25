@@ -1,7 +1,7 @@
-﻿using AppApiService.Domain.DevOps.ServiceTask;
+﻿using Microsoft.EntityFrameworkCore;
+using AppApiService.Domain.DevOps.ServiceTask;
 using AppApiService.Infrastructure.Common;
 using AppApiService.ViewModel;
-using Microsoft.EntityFrameworkCore;
 
 namespace AppApiService.Controllers;
 

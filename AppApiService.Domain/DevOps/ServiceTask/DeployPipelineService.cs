@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using AppApiService.Domain.DevOps.AgentServer;
 using Renci.SshNet;
-using static AppApiService.Domain.Common.CommonValue;
 
 namespace AppApiService.Domain.DevOps.ServiceTask;
 
@@ -149,7 +148,7 @@ public class DeployPipelineService : IDeployPipelineService
                 Description = a.Description,
                 CreatedOn = a.CreatedOn,
                 LastModifyOn = a.LastModifyOn
-            });
+            }).OrderByDescending(a => a.Id);
         return query;
     }
 
