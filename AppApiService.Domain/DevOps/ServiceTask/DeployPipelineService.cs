@@ -19,10 +19,50 @@ public class DeployPipelineService : IDeployPipelineService
     public async Task<bool> CreatePipeline(Pipeline pipeline)
     {
         var pipelines = unitOfWork.Get().Set<Pipeline>();
+        for (var i = 0; i < pipeline.Tasks.Count; i++) 
+        {
+            var task = pipeline.Tasks[i];
+            task.StepNo = i;
+        }
         await pipelines.AddAsync(pipeline);
         var influenceCount = await unitOfWork.Get().SaveChangesAsync();
         return influenceCount > 0;
     }
+
+    public async Task<bool> EditPipeline(Pipeline pipeline)
+    {
+        var pipelines = unitOfWork.Get().Set<Pipeline>();
+        pipelines.Update(pipeline);
+        var taskIds = pipeline.Tasks.Select(a => a.Id).ToArray();
+        var pipelineTasks = await unitOfWork.Get().Set<PipelineTask>()
+            .Where(a => a.PipelineId == pipeline.Id).ToListAsync();
+        foreach (var pipelineTask in pipelineTasks)
+        {
+            if (!taskIds.Contains(pipelineTask.Id))
+            {
+                pipelineTask.IsDeleted = true;
+            }
+        }
+        var influenceCount = await unitOfWork.Get().SaveChangesAsync();
+        return influenceCount > 0;
+    }
+
+    public async Task<bool> DeletePipelineById(int id)
+    {
+        var pipeline = await unitOfWork.Get().Set<Pipeline>().FindAsync(id);
+        if (pipeline != null)
+        {
+            pipeline.IsDeleted = true;
+            var tasks = pipeline.Tasks;
+            foreach (var task in tasks)
+            {
+                task.IsDeleted = true;
+            }
+        }
+        var influenceCount = await unitOfWork.Get().SaveChangesAsync();
+        return influenceCount > 0;
+    }
+
 
     public async Task DeployPipeline(int pipelineId, int serverId)
     {
@@ -66,7 +106,7 @@ public class DeployPipelineService : IDeployPipelineService
 
     private async Task saveDeployPipelineToLocalHost(DeployPipeline deployPipeline)
     {
-        if(!Directory.Exists(deployPipelineLogFolderPath))
+        if (!Directory.Exists(deployPipelineLogFolderPath))
         {
             Directory.CreateDirectory(deployPipelineLogFolderPath);
         }

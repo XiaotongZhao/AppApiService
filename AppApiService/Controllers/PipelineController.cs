@@ -25,6 +25,20 @@ public class PipelineController : ControllerBase
         return res;
     }
 
+    [HttpPost, Route("EditPipeline")]
+    public async Task<bool> EditPipeline(Pipeline pipeline)
+    {
+        var res = await deployPipelineService.EditPipeline(pipeline);
+        return res;
+    }
+
+    [HttpGet, Route("DeletePipelineById")]
+    public async Task<bool> DeletePipelineById(int id)
+    {
+        var res = await deployPipelineService.DeletePipelineById(id);
+        return res;
+    }
+
     [HttpGet, Route("DeployPipeline")]
     public async Task DeployPipeline(int pipelineId, int serverId)
     {
