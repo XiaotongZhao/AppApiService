@@ -19,7 +19,7 @@ public class DeployPipelineService : IDeployPipelineService
     public async Task<bool> CreatePipeline(Pipeline pipeline)
     {
         var pipelines = unitOfWork.Get().Set<Pipeline>();
-        for (var i = 0; i < pipeline.Tasks.Count; i++) 
+        for (var i = 0; i < pipeline.Tasks.Count; i++)
         {
             var task = pipeline.Tasks[i];
             task.StepNo = i;
@@ -34,13 +34,13 @@ public class DeployPipelineService : IDeployPipelineService
         var pipelines = unitOfWork.Get().Set<Pipeline>();
         pipelines.Update(pipeline);
         var taskIds = pipeline.Tasks.Select(a => a.Id).ToArray();
-        var pipelineTasks = await unitOfWork.Get().Set<PipelineTask>()
-            .Where(a => a.PipelineId == pipeline.Id).ToListAsync();
-        foreach (var pipelineTask in pipelineTasks)
+        var pipelineTaskIds = await unitOfWork.Get().Set<PipelineTask>()
+            .Where(a => a.PipelineId == pipeline.Id).Select(a => a.Id).ToArrayAsync();
+        foreach (var pipelineTaskId in pipelineTaskIds)
         {
-            if (!taskIds.Contains(pipelineTask.Id))
+            if (!taskIds.Contains(pipelineTaskId))
             {
-                pipelineTask.IsDeleted = true;
+                await unitOfWork.Get().Set<PipelineTask>().ExecuteUpdateAsync(a => a.SetProperty(b => b.IsDeleted, true));
             }
         }
         var influenceCount = await unitOfWork.Get().SaveChangesAsync();
