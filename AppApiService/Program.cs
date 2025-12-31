@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
                       });
 });
 // Add services to the container.
-builder.Services.AddDbContext<EFContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerDBConnection")));
+builder.Services.AddDbContext<EFContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PGDBConnection")));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 IoCConfig.ImplementDIByScanLibrary(builder.Services, new[] { "AppApiService.Domain" });
 builder.Services.AddControllers(controller =>
