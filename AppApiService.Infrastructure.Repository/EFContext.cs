@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using AppApiService.Domain.Common;
-using AppApiService.Domain.DynamicRequestDataService;
-using AppApiService.Domain.DevOps.ServiceTask;
-using AppApiService.Domain.DevOps.AgentServer;
 
 namespace AppApiService.Infrastructure.Repository;
 
@@ -16,13 +13,7 @@ public class EFContext : DbContext
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseLazyLoadingProxies();
-    public virtual DbSet<DataMap> DataMap { get; set; }
-    public virtual DbSet<Server> Servers { get; set; }
-    public virtual DbSet<ServerUploadFile> ServerUploadFiles { get; set; }
-    public virtual DbSet<Pipeline> Pipelines { get; set; }
-    public virtual DbSet<PipelineTask> PipelineTasks { get; set; }
-    public virtual DbSet<DeployPipeline> DeployPipelines { get; set; }
-    public virtual DbSet<DeployPipelineTask> DeployPipelineTasks { get; set; }
+    //public virtual DbSet<DataMap> DataMap { get; set; }
 
     public override int SaveChanges()
     {

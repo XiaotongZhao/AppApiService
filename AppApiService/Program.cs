@@ -1,11 +1,12 @@
-using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 using AppApiService.Common;
+using AppApiService.Common.Middleware;
 using AppApiService.Domain.Common;
 using AppApiService.Infrastructure.Common;
 using AppApiService.Infrastructure.Repository;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigureLogging();
@@ -22,9 +23,18 @@ builder.Services.AddCors(options =>
                       });
 });
 // Add services to the container.
-builder.Services.AddDbContext<EFContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PGDBConnection")));
+var pgDBConnection = builder.Configuration.GetConnectionString("PGDBConnection");
+if (!string.IsNullOrEmpty(pgDBConnection))
+{
+    builder.Services.AddHealthChecks()
+    .AddNpgSql(pgDBConnection,
+        name: "PostgreSQL Database",
+        tags: new[] { "database", "critical" });
+    builder.Services.AddDbContext<EFContext>(options => options.UseNpgsql(pgDBConnection));
+}
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-IoCConfig.ImplementDIByScanLibrary(builder.Services, new[] { "AppApiService.Domain" });
+
+IoCConfig.ImplementDIByScanLibrary(builder.Services, ["AppApiService.Domain"]);
 builder.Services.AddControllers(controller =>
 {
     controller.Filters.Add<LogFunActionFilter>();
@@ -35,11 +45,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<EFContext>();
-    db.Database.Migrate();
-}
+app.UseExceptionHandling();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -57,6 +63,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGet("/", () => "Deploy appApiService successfull!");
+
+app.MapHealthChecks("/health");
 
 app.Run();
 
@@ -77,7 +85,7 @@ void ConfigureLogging()
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Console()
-            //.WriteTo.Elasticsearch(ConfigureElasticSink(elasticAddress, userName, password, environment))
+            .WriteTo.Elasticsearch(ConfigureElasticSink(elasticAddress, userName, password, environment))
             .Enrich.WithProperty("Environment", environment)
             .ReadFrom.Configuration(configuration)
             .CreateLogger();
