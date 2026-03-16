@@ -4,11 +4,11 @@ public class ApplicationService : IApplicationService
 {
     public int[] OrderStudentNos(int[] studentNos)
     {
-        var studentNoCounts = studentNos.Length;
-        var middleCount = studentNoCounts / 2 + studentNoCounts % 2;
-        var studentNosByOrdered = studentNos.Order().ToList();
-        if (studentNosByOrdered != null)
+        if (studentNos != null)
         {
+            var studentNoCounts = studentNos.Length;
+            var middleCount = studentNoCounts / 2 + studentNoCounts % 2;
+            var studentNosByOrdered = studentNos.Order().ToList();
             var studentNosByNewOrder = new List<int>();
             var studentNosFromHeadToMiddle = studentNosByOrdered.Take(middleCount).ToList();
             var studentNosFromTailToMiddle = studentNosByOrdered.TakeLast(studentNoCounts - middleCount).OrderDescending().ToList();

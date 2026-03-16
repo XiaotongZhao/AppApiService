@@ -14,16 +14,15 @@ public class ApplicationController : ControllerBase
         this.applicationService = applicationService;
     }
 
-    [HttpGet, Route("TestThrowException")]
-    public void TestThrowException()
+    [HttpPost("order-student-nos")]
+    public ActionResult<int[]> OrderStudentNos([FromBody] int[] studentNos)
     {
-        throw new Exception("this is a test for global exception!!!");
-    }
+        if (studentNos == null || studentNos.Length == 0)
+        {
+            return BadRequest("学生编号列表不能为空");
+        }
 
-    [HttpPost, Route("OrderStudentNos")]
-    public int[] OrderStudentNos(int[] studentNos)
-    {
-        return applicationService.OrderStudentNos(studentNos);
+        var result = applicationService.OrderStudentNos(studentNos);
+        return Ok(result);
     }
-
 }
