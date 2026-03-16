@@ -6,20 +6,21 @@ public class ApplicationService : IApplicationService
     {
         if (studentNos != null)
         {
-            var studentNoCounts = studentNos.Length;
+            var studentNosByOrdered = studentNos.Order().ToArray();
+            var studentNoCounts = studentNosByOrdered.Count();
+            var studentNosByNewOrder = new int[studentNoCounts];
             var middleCount = studentNoCounts / 2 + studentNoCounts % 2;
-            var studentNosByOrdered = studentNos.Order().ToList();
-            var studentNosByNewOrder = new List<int>();
-            var studentNosFromHeadToMiddle = studentNosByOrdered.Take(middleCount).ToList();
-            var studentNosFromTailToMiddle = studentNosByOrdered.TakeLast(studentNoCounts - middleCount).OrderDescending().ToList();
+            var lastIndex = studentNoCounts - 1;
+            var index = 0;
             for (var i = 0; i < middleCount; i++)
             {
-                if (i < studentNosFromHeadToMiddle.Count)
-                    studentNosByNewOrder.Add(studentNosFromHeadToMiddle[i]);
-                if (i < studentNosFromTailToMiddle.Count)
-                    studentNosByNewOrder.Add(studentNosFromTailToMiddle[i]);
+                studentNosByNewOrder[index] = studentNosByOrdered[i];
+                if (lastIndex >= middleCount)
+                    studentNosByNewOrder[++index] = studentNosByOrdered[lastIndex];
+                ++index;
+                lastIndex--;
             }
-            return [.. studentNosByNewOrder];
+            return studentNosByNewOrder;
         }
         else
             throw new Exception($"{nameof(studentNos)} is null !!!!");
