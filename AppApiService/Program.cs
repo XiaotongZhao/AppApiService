@@ -4,6 +4,7 @@ using AppApiService.Domain.Common;
 using AppApiService.Infrastructure.Common;
 using AppApiService.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Reflection;
@@ -24,12 +25,20 @@ builder.Services.AddCors(options =>
 });
 // Add services to the container.
 var pgDBConnection = builder.Configuration.GetConnectionString("PGDBConnection");
+var servcieConnectionAdress = builder.Configuration["ServcieConnection:checkHealthyAddress"];
 if (!string.IsNullOrEmpty(pgDBConnection))
 {
-    builder.Services.AddHealthChecks()
+    var healthChecks = builder.Services.AddHealthChecks()
     .AddNpgSql(pgDBConnection,
         name: "PostgreSQL Database",
         tags: new[] { "database", "critical" });
+    if (!string.IsNullOrEmpty(servcieConnectionAdress))
+        healthChecks.AddUrlGroup(
+            uri: new Uri(servcieConnectionAdress),
+            name: "Third-Party API",
+            failureStatus: HealthStatus.Unhealthy,
+            tags: new[] { "external", "api" });
+
     builder.Services.AddDbContext<EFContext>(options => options.UseNpgsql(pgDBConnection));
 }
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
